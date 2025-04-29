@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { getAllWordPairs, type WordPair } from "@shared/wordPairs";
 
 export function GameSetup() {
   const [, setLocation] = useLocation();
@@ -18,13 +19,32 @@ export function GameSetup() {
   });
   const [useCustomNames, setUseCustomNames] = useState(false);
   const [playerNames, setPlayerNames] = useState<string[]>([]);
+  const [loadedWordPairs, setLoadedWordPairs] = useState<WordPair[]>([]);
+  const [isLoadingWordPairs, setIsLoadingWordPairs] = useState(false);
 
+  // Load initial configuration
   useEffect(() => {
     updateRoleDistribution(playerCount);
     
     // Initialize empty player names array with the correct length
     setPlayerNames(Array(playerCount).fill(''));
+    
+    // Load word pairs
+    loadWordPairs();
   }, [playerCount]);
+  
+  // Function to load word pairs from JSON file
+  const loadWordPairs = async () => {
+    setIsLoadingWordPairs(true);
+    try {
+      const pairs = await getAllWordPairs();
+      setLoadedWordPairs(pairs);
+    } catch (error) {
+      console.error("Error loading word pairs:", error);
+    } finally {
+      setIsLoadingWordPairs(false);
+    }
+  };
 
   const updateRoleDistribution = (count: number, undercoverCount?: number, mrWhiteCount?: number) => {
     // If values are provided, use them, otherwise calculate based on player count
@@ -105,11 +125,25 @@ export function GameSetup() {
     setPlayerNames(newNames);
   };
 
-  const handleStartGame = () => {
-    // Use custom names if enabled, otherwise use empty array to get random names
-    const names = useCustomNames ? playerNames.map((name, index) => name || `Player ${index + 1}`) : [];
-    startGame(playerCount, roleDistribution, names);
-    setLocation("/game");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleStartGame = async () => {
+    setIsLoading(true);
+    try {
+      // Use custom names if enabled, otherwise use empty array to get random names
+      const names = useCustomNames ? playerNames.map((name, index) => name || `Player ${index + 1}`) : [];
+      
+      // Call the async startGame and wait for it to complete
+      await startGame(playerCount, roleDistribution, names);
+      
+      // Only redirect after game is successfully started
+      setLocation("/game");
+    } catch (error) {
+      console.error("Error starting game:", error);
+      // Error is already handled in the startGame function with a toast
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -234,8 +268,9 @@ export function GameSetup() {
         <Button 
           className="w-full py-3 bg-primary hover:bg-primary-dark text-white font-display font-bold rounded-lg transition-colors"
           onClick={handleStartGame}
+          disabled={isLoading}
         >
-          Start Game
+          {isLoading ? "Loading word pairs..." : "Start Game"}
         </Button>
       </div>
 
@@ -290,28 +325,57 @@ export function GameSetup() {
           </TabsContent>
           
           <TabsContent value="wordPairs" className="p-6">
-            <p className="text-sm mb-4">The game uses word pairs that are similar but different. Here are some examples:</p>
-            <div className="space-y-2 text-sm">
-              <div className="bg-gray-50 dark:bg-neutral-light p-2 rounded flex justify-between">
-                <span className="text-civilian font-medium">Apple</span>
-                <span className="text-undercover font-medium">Banana</span>
+            <p className="text-sm mb-4">The game uses word pairs that are similar but different. {isLoadingWordPairs ? 'Loading word pairs...' : `${loadedWordPairs.length} pairs loaded from JSON file.`}</p>
+            
+            {isLoadingWordPairs ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
               </div>
-              <div className="bg-gray-50 dark:bg-neutral-light p-2 rounded flex justify-between">
-                <span className="text-civilian font-medium">Cat</span>
-                <span className="text-undercover font-medium">Dog</span>
+            ) : (
+              <div className="space-y-2 text-sm max-h-60 overflow-y-auto">
+                {loadedWordPairs.length > 0 ? (
+                  loadedWordPairs.slice(0, 20).map((pair, index) => (
+                    <div key={index} className="bg-gray-50 dark:bg-neutral-light p-2 rounded flex justify-between">
+                      <span className="text-civilian font-medium">{pair.word1}</span>
+                      <span className="text-undercover font-medium">{pair.word2}</span>
+                    </div>
+                  ))
+                ) : (
+                  // Fallback examples if no word pairs are loaded
+                  <>
+                    <div className="bg-gray-50 dark:bg-neutral-light p-2 rounded flex justify-between">
+                      <span className="text-civilian font-medium">Apple</span>
+                      <span className="text-undercover font-medium">Banana</span>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-neutral-light p-2 rounded flex justify-between">
+                      <span className="text-civilian font-medium">Cat</span>
+                      <span className="text-undercover font-medium">Dog</span>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-neutral-light p-2 rounded flex justify-between">
+                      <span className="text-civilian font-medium">Ocean</span>
+                      <span className="text-undercover font-medium">Lake</span>
+                    </div>
+                  </>
+                )}
+                
+                {loadedWordPairs.length > 20 && (
+                  <div className="text-center text-sm text-gray-500 mt-2">
+                    Showing 20 of {loadedWordPairs.length} available word pairs
+                  </div>
+                )}
               </div>
-              <div className="bg-gray-50 dark:bg-neutral-light p-2 rounded flex justify-between">
-                <span className="text-civilian font-medium">Ocean</span>
-                <span className="text-undercover font-medium">Lake</span>
-              </div>
-              <div className="bg-gray-50 dark:bg-neutral-light p-2 rounded flex justify-between">
-                <span className="text-civilian font-medium">Guitar</span>
-                <span className="text-undercover font-medium">Piano</span>
-              </div>
-              <div className="bg-gray-50 dark:bg-neutral-light p-2 rounded flex justify-between">
-                <span className="text-civilian font-medium">Sun</span>
-                <span className="text-undercover font-medium">Moon</span>
-              </div>
+            )}
+            
+            <div className="mt-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={loadWordPairs} 
+                disabled={isLoadingWordPairs}
+                className="text-sm"
+              >
+                {isLoadingWordPairs ? "Loading..." : "Reload Word Pairs"}
+              </Button>
             </div>
           </TabsContent>
         </Tabs>
