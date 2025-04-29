@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 export function RoleRevealModal() {
   const { 
     gameState, 
-    currentPlayerRole, 
+    currentPlayerRole,
+    currentPlayerName, 
     currentPlayerWord, 
     closeRoleRevealModal,
     setIsRulesModalOpen
@@ -36,7 +37,8 @@ export function RoleRevealModal() {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
       <div className="bg-white dark:bg-neutral-dark max-w-md w-full mx-4 rounded-lg overflow-hidden shadow-xl animate-slide-in">
         <div className="p-6 text-center">
-          <h3 className="font-display font-bold text-2xl mb-2">Your Role</h3>
+          <h3 className="font-display font-bold text-2xl mb-1">{currentPlayerName}'s Role</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Don't show this to other players!</p>
           <div className="py-8">
             <div className={`w-24 h-24 mx-auto ${roleColor} rounded-full flex items-center justify-center mb-4`}>
               <span className="text-white font-display font-bold text-xl">{currentPlayerRole}</span>

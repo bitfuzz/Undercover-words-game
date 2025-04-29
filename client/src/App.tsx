@@ -22,8 +22,8 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <GameProvider>
-        <TooltipProvider>
+      <TooltipProvider>
+        <GameProvider>
           <div className="min-h-screen flex flex-col">
             <Header />
             <main className="flex-grow container mx-auto px-4 py-6">
@@ -31,8 +31,8 @@ function App() {
             </main>
           </div>
           <Toaster />
-        </TooltipProvider>
-      </GameProvider>
+        </GameProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

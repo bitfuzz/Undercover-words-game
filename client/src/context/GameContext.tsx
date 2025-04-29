@@ -7,6 +7,8 @@ interface GameContextType {
   gameState: GameState;
   currentPlayerRole: string;
   currentPlayerWord?: string;
+  currentPlayerName: string;
+  playerNames: string[];
   eliminatedPlayer: Player | null;
   selectedPlayerForElimination: string | null;
   winner: Winner | null;
@@ -17,7 +19,7 @@ interface GameContextType {
   isGameOverModalOpen: boolean;
   isRulesModalOpen: boolean;
   resetGame: () => void;
-  startGame: (playerCount: number, roleDistribution: { civilians: number; undercover: number; mrWhite: number }) => void;
+  startGame: (playerCount: number, roleDistribution: { civilians: number; undercover: number; mrWhite: number }, customNames: string[]) => void;
   openRoleRevealModal: () => void;
   closeRoleRevealModal: () => void;
   openEliminationModal: () => void;
@@ -55,6 +57,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
   const [currentPlayerRole, setCurrentPlayerRole] = useState<string>("");
   const [currentPlayerWord, setCurrentPlayerWord] = useState<string>("");
+  const [currentPlayerName, setCurrentPlayerName] = useState<string>("");
+  const [playerNames, setPlayerNames] = useState<string[]>([]);
   const [eliminatedPlayer, setEliminatedPlayer] = useState<Player | null>(null);
   const [selectedPlayerForElimination, setSelectedPlayerForElimination] = useState<string | null>(null);
   const [winner, setWinner] = useState<Winner | null>(null);
@@ -72,6 +76,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setGameState(initialGameState);
     setCurrentPlayerRole("");
     setCurrentPlayerWord("");
+    setCurrentPlayerName("");
+    setPlayerNames([]);
     setEliminatedPlayer(null);
     setSelectedPlayerForElimination(null);
     setWinner(null);
@@ -84,9 +90,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   
   const startGame = useCallback((
     playerCount: number, 
-    roleDistribution: { civilians: number; undercover: number; mrWhite: number }
+    roleDistribution: { civilians: number; undercover: number; mrWhite: number },
+    customNames: string[] = []
   ) => {
-    const { players, civilianWord, undercoverWord } = generateGame(playerCount, roleDistribution);
+    const { players, civilianWord, undercoverWord } = generateGame(playerCount, roleDistribution, customNames);
+    
+    // Save the player names for future use
+    setPlayerNames(players.map(player => player.name));
     
     setGameState({
       gameStarted: true,
@@ -106,6 +116,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       
       setCurrentPlayerRole(player.role);
       setCurrentPlayerWord(player.word || "");
+      setCurrentPlayerName(player.name);
       setIsRoleRevealModalOpen(true);
     }
   }, [gameState.players]);
@@ -262,6 +273,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         gameState,
         currentPlayerRole,
         currentPlayerWord,
+        currentPlayerName,
+        playerNames,
         eliminatedPlayer,
         selectedPlayerForElimination,
         winner,

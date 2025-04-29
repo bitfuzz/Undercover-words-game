@@ -3,6 +3,9 @@ import { useLocation } from "wouter";
 import { useGameContext } from "@/context/GameContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export function GameSetup() {
   const [, setLocation] = useLocation();
@@ -13,9 +16,14 @@ export function GameSetup() {
     undercover: 1,
     mrWhite: 1
   });
+  const [useCustomNames, setUseCustomNames] = useState(false);
+  const [playerNames, setPlayerNames] = useState<string[]>([]);
 
   useEffect(() => {
     updateRoleDistribution(playerCount);
+    
+    // Initialize empty player names array with the correct length
+    setPlayerNames(Array(playerCount).fill(''));
   }, [playerCount]);
 
   const updateRoleDistribution = (count: number) => {
@@ -49,8 +57,17 @@ export function GameSetup() {
     }
   };
 
+  // Update a specific player name
+  const updatePlayerName = (index: number, name: string) => {
+    const newNames = [...playerNames];
+    newNames[index] = name;
+    setPlayerNames(newNames);
+  };
+
   const handleStartGame = () => {
-    startGame(playerCount, roleDistribution);
+    // Use custom names if enabled, otherwise use empty array to get random names
+    const names = useCustomNames ? playerNames.map((name, index) => name || `Player ${index + 1}`) : [];
+    startGame(playerCount, roleDistribution, names);
     setLocation("/game");
   };
 
@@ -97,6 +114,43 @@ export function GameSetup() {
               <div id="mrwhite-count" className="text-2xl font-bold">{roleDistribution.mrWhite}</div>
             </div>
           </div>
+        </div>
+        
+        <div className="border-t border-gray-200 dark:border-neutral-lighter pt-5 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-display font-semibold text-lg">Player Names</h3>
+            <div className="flex items-center space-x-2">
+              <Switch 
+                id="custom-names" 
+                checked={useCustomNames}
+                onCheckedChange={setUseCustomNames}
+              />
+              <Label htmlFor="custom-names" className="text-sm">
+                Use Custom Names
+              </Label>
+            </div>
+          </div>
+          
+          {useCustomNames && (
+            <div className="space-y-3 max-h-60 overflow-y-auto mb-4 pr-1">
+              {playerNames.map((name, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <Input 
+                    placeholder={`Player ${index + 1}`}
+                    value={name}
+                    onChange={(e) => updatePlayerName(index, e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {!useCustomNames && (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Random names will be generated for all players. Enable custom names to specify your own.
+            </p>
+          )}
         </div>
 
         <Button 

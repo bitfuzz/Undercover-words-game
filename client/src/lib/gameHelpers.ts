@@ -52,14 +52,19 @@ export interface Winner {
 // Generate a new game
 export const generateGame = (
   playerCount: number, 
-  roleDistribution: { civilians: number; undercover: number; mrWhite: number }
+  roleDistribution: { civilians: number; undercover: number; mrWhite: number },
+  customNames: string[] = []
 ) => {
   // Generate random word pair
   const { word1, word2 } = getRandomWordPair();
   
   // Create players array
   let players: Player[] = [];
-  let playerNames = generatePlayerNames(playerCount);
+  
+  // Use custom names if provided, otherwise generate random names
+  let playerNames = customNames.length === playerCount 
+    ? customNames 
+    : generatePlayerNames(playerCount);
   
   // Assign roles
   let roles: PlayerRole[] = [];
