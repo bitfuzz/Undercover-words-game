@@ -26,16 +26,15 @@ export function GameSetup() {
     setPlayerNames(Array(playerCount).fill(''));
   }, [playerCount]);
 
-  const updateRoleDistribution = (count: number) => {
-    let undercover = 1;
-    let mrWhite = 1;
+  const updateRoleDistribution = (count: number, undercoverCount?: number, mrWhiteCount?: number) => {
+    // If values are provided, use them, otherwise calculate based on player count
+    const undercover = undercoverCount !== undefined ? undercoverCount : 
+      (count >= 7 && count <= 10) ? 2 : 
+      (count > 10) ? 3 : 1;
     
-    if (count >= 7 && count <= 10) {
-      undercover = 2;
-    } else if (count > 10) {
-      undercover = 3;
-    }
+    const mrWhite = mrWhiteCount !== undefined ? mrWhiteCount : 1;
     
+    // Calculate civilians based on total and other roles
     const civilians = count - undercover - mrWhite;
     
     setRoleDistribution({
@@ -43,6 +42,48 @@ export function GameSetup() {
       undercover,
       mrWhite
     });
+  };
+  
+  const increaseUndercover = () => {
+    const maxUndercover = Math.floor(playerCount / 2) - roleDistribution.mrWhite;
+    if (roleDistribution.undercover < maxUndercover) {
+      updateRoleDistribution(
+        playerCount, 
+        roleDistribution.undercover + 1, 
+        roleDistribution.mrWhite
+      );
+    }
+  };
+  
+  const decreaseUndercover = () => {
+    if (roleDistribution.undercover > 0) {
+      updateRoleDistribution(
+        playerCount, 
+        roleDistribution.undercover - 1, 
+        roleDistribution.mrWhite
+      );
+    }
+  };
+  
+  const increaseMrWhite = () => {
+    const maxMrWhite = Math.floor(playerCount / 3) - roleDistribution.undercover;
+    if (roleDistribution.mrWhite < maxMrWhite && roleDistribution.mrWhite < 2) {
+      updateRoleDistribution(
+        playerCount, 
+        roleDistribution.undercover, 
+        roleDistribution.mrWhite + 1
+      );
+    }
+  };
+  
+  const decreaseMrWhite = () => {
+    if (roleDistribution.mrWhite > 0) {
+      updateRoleDistribution(
+        playerCount, 
+        roleDistribution.undercover, 
+        roleDistribution.mrWhite - 1
+      );
+    }
   };
 
   const decreasePlayers = () => {
@@ -105,15 +146,52 @@ export function GameSetup() {
               <div className="font-display font-bold text-civilian">Civilians</div>
               <div id="civilian-count" className="text-2xl font-bold">{roleDistribution.civilians}</div>
             </div>
+            
             <div className="bg-gray-50 dark:bg-neutral-light rounded-lg p-3">
               <div className="font-display font-bold text-undercover">Undercover</div>
-              <div id="undercover-count" className="text-2xl font-bold">{roleDistribution.undercover}</div>
+              <div className="flex items-center justify-center gap-2">
+                <button 
+                  className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral flex items-center justify-center text-sm"
+                  onClick={decreaseUndercover}
+                  disabled={roleDistribution.undercover <= 0}
+                >
+                  -
+                </button>
+                <div id="undercover-count" className="text-2xl font-bold">{roleDistribution.undercover}</div>
+                <button 
+                  className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral flex items-center justify-center text-sm"
+                  onClick={increaseUndercover}
+                  disabled={roleDistribution.civilians <= 1}
+                >
+                  +
+                </button>
+              </div>
             </div>
+            
             <div className="bg-gray-50 dark:bg-neutral-light rounded-lg p-3">
               <div className="font-display font-bold text-mrwhite">Mr. White</div>
-              <div id="mrwhite-count" className="text-2xl font-bold">{roleDistribution.mrWhite}</div>
+              <div className="flex items-center justify-center gap-2">
+                <button 
+                  className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral flex items-center justify-center text-sm"
+                  onClick={decreaseMrWhite}
+                  disabled={roleDistribution.mrWhite <= 0}
+                >
+                  -
+                </button>
+                <div id="mrwhite-count" className="text-2xl font-bold">{roleDistribution.mrWhite}</div>
+                <button 
+                  className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral flex items-center justify-center text-sm"
+                  onClick={increaseMrWhite}
+                  disabled={roleDistribution.civilians <= 1 || roleDistribution.mrWhite >= 2}
+                >
+                  +
+                </button>
+              </div>
             </div>
           </div>
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            Adjust the number of Undercover agents and Mr. White. At least 1 Civilian is required.
+          </p>
         </div>
         
         <div className="border-t border-gray-200 dark:border-neutral-lighter pt-5 mb-6">

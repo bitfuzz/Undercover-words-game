@@ -9,6 +9,9 @@ interface GameContextType {
   currentPlayerWord?: string;
   currentPlayerName: string;
   playerNames: string[];
+  currentPlayerIndex: number;
+  revealedPlayers: string[];
+  selectedCardIndex: number | null;
   eliminatedPlayer: Player | null;
   selectedPlayerForElimination: string | null;
   winner: Winner | null;
@@ -22,6 +25,8 @@ interface GameContextType {
   startGame: (playerCount: number, roleDistribution: { civilians: number; undercover: number; mrWhite: number }, customNames: string[]) => void;
   openRoleRevealModal: () => void;
   closeRoleRevealModal: () => void;
+  selectCard: (cardIndex: number) => void;
+  moveToNextPlayer: () => void;
   openEliminationModal: () => void;
   closeEliminationModal: () => void;
   setSelectedPlayerForElimination: (playerId: string) => void;
@@ -33,7 +38,6 @@ interface GameContextType {
   closeGameOverModal: () => void;
   startNewGame: () => void;
   endGame: () => void;
-  showGameDetails: () => void;
   setIsRulesModalOpen: (isOpen: boolean) => void;
   openRulesModal: () => void;
 }
@@ -59,6 +63,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [currentPlayerWord, setCurrentPlayerWord] = useState<string>("");
   const [currentPlayerName, setCurrentPlayerName] = useState<string>("");
   const [playerNames, setPlayerNames] = useState<string[]>([]);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
+  const [revealedPlayers, setRevealedPlayers] = useState<string[]>([]);
+  const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null);
   const [eliminatedPlayer, setEliminatedPlayer] = useState<Player | null>(null);
   const [selectedPlayerForElimination, setSelectedPlayerForElimination] = useState<string | null>(null);
   const [winner, setWinner] = useState<Winner | null>(null);
@@ -78,6 +85,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setCurrentPlayerWord("");
     setCurrentPlayerName("");
     setPlayerNames([]);
+    setCurrentPlayerIndex(0);
+    setRevealedPlayers([]);
+    setSelectedCardIndex(null);
     setEliminatedPlayer(null);
     setSelectedPlayerForElimination(null);
     setWinner(null);
@@ -109,14 +119,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   }, []);
   
   const openRoleRevealModal = useCallback(() => {
-    // Randomly select a player and show their role
+    // Start with the first player
     if (gameState.players.length > 0) {
-      const randomIndex = Math.floor(Math.random() * gameState.players.length);
-      const player = gameState.players[randomIndex];
-      
-      setCurrentPlayerRole(player.role);
-      setCurrentPlayerWord(player.word || "");
-      setCurrentPlayerName(player.name);
+      setCurrentPlayerIndex(0);
+      setRevealedPlayers([]);
+      setSelectedCardIndex(null);
+      setCurrentPlayerName(gameState.players[0].name);
       setIsRoleRevealModalOpen(true);
     }
   }, [gameState.players]);
@@ -124,6 +132,45 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const closeRoleRevealModal = useCallback(() => {
     setIsRoleRevealModalOpen(false);
   }, []);
+  
+  const selectCard = useCallback((cardIndex: number) => {
+    // This method is called when a player selects a card to reveal their role
+    if (gameState.players.length > 0 && currentPlayerIndex < gameState.players.length) {
+      const player = gameState.players[currentPlayerIndex];
+      
+      // Set the card selected
+      setSelectedCardIndex(cardIndex);
+      
+      // Set the current player's role and word
+      setCurrentPlayerRole(player.role);
+      setCurrentPlayerWord(player.word || "");
+      
+      // Add this player to the revealed players list
+      setRevealedPlayers(prev => [...prev, player.id]);
+    }
+  }, [gameState.players, currentPlayerIndex]);
+  
+  const moveToNextPlayer = useCallback(() => {
+    // This method is called after a player has seen their role and is ready to pass to the next player
+    const nextPlayerIndex = currentPlayerIndex + 1;
+    
+    if (nextPlayerIndex < gameState.players.length) {
+      // Move to next player
+      setCurrentPlayerIndex(nextPlayerIndex);
+      setSelectedCardIndex(null); // Reset selected card
+      setCurrentPlayerRole(""); // Clear current role
+      setCurrentPlayerWord(""); // Clear current word
+      setCurrentPlayerName(gameState.players[nextPlayerIndex].name);
+    } else {
+      // All players have seen their roles
+      setIsRoleRevealModalOpen(false);
+      // Optionally show a toast or message that all players have their roles
+      toast({
+        title: "All Players Ready",
+        description: "Everyone now knows their role. Let the game begin!",
+      });
+    }
+  }, [gameState.players, currentPlayerIndex, toast]);
   
   const openEliminationModal = useCallback(() => {
     setIsEliminationModalOpen(true);
@@ -258,10 +305,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setLocation("/");
   }, [resetGame, setLocation]);
   
-  const showGameDetails = useCallback(() => {
-    // Show game details or history
-    setIsGameOverModalOpen(false);
-  }, []);
+
   
   const openRulesModal = useCallback(() => {
     setIsRulesModalOpen(true);
@@ -275,6 +319,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         currentPlayerWord,
         currentPlayerName,
         playerNames,
+        currentPlayerIndex,
+        revealedPlayers,
+        selectedCardIndex,
         eliminatedPlayer,
         selectedPlayerForElimination,
         winner,
@@ -288,6 +335,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         startGame,
         openRoleRevealModal,
         closeRoleRevealModal,
+        selectCard,
+        moveToNextPlayer,
         openEliminationModal,
         closeEliminationModal,
         setSelectedPlayerForElimination,
@@ -299,7 +348,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         closeGameOverModal,
         startNewGame,
         endGame,
-        showGameDetails,
         setIsRulesModalOpen,
         openRulesModal
       }}
