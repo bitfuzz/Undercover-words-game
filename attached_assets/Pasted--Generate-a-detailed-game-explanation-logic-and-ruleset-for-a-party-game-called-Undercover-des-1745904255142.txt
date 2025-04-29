@@ -1,0 +1,112 @@
+
+"Generate a detailed game explanation, logic, and ruleset for a party game called *Undercover*, designed for **4 to 20 players**. The game is played offline (in person), and an app or interface is used **only for assigning roles and eliminating players**, not for gameplay mechanics like clue-giving or voting. The interface should include a button to eliminate a player, after which their role is revealed. There are only three types of roles: *Undercover*, *Civilian*, and *Mr. White* — no other special roles should be included. Focus on simplicity, hidden identity, and deduction.
+
+The generated output should include the following clearly defined sections:
+
+---
+
+### 1. **Overview of the Game**
+
+- *Undercover* is a hidden-role social deduction game for 4–20 players.
+- Each player is secretly assigned one of three roles: **Undercover**, **Civilian**, or **Mr. White**.
+- The objective varies by role:
+  - **Civilians** must identify and eliminate all *Undercover* and *Mr. White* players.
+  - **Undercover** players must blend in and be the last players standing.
+  - **Mr. White** has no clue word and must improvise and deceive the others; they win if they survive to the final 2 or guess the civilian word if eliminated.
+
+---
+
+### 2. **Roles and Their Functions**
+
+- **Civilian**:
+  - The majority role.
+  - Knows the secret word (e.g., "apple").
+  - Must figure out who the Undercover and Mr. White players are and vote them out.
+  
+- **Undercover**:
+  - Knows a slightly different word from the civilian word (e.g., "banana" instead of "apple").
+  - Tries to avoid suspicion and eliminate civilians.
+  
+- **Mr. White**:
+  - Receives no word at all.
+  - Must pretend to know the word and deceive others.
+  - Wins if:
+    - All civilians and Undercover players are eliminated except one.
+    - OR if Mr. White is eliminated but correctly guesses the civilian word.
+
+---
+
+### 3. **Game Setup**
+
+- Each player accesses the interface privately and taps a “Start” button to receive their secret role.
+- The system randomly assigns:
+  - 1–3 Undercover players depending on total player count.
+  - 1 Mr. White.
+  - The remaining players are Civilians.
+- Civilians and Undercover players receive **similar but not identical words** (e.g., "Cat" vs "Tiger").
+- Mr. White is told, "You are Mr. White. You do not have a word."
+
+Example role distribution:
+- 4–6 players: 1 Undercover, 1 Mr. White, rest Civilians.
+- 7–10 players: 2 Undercover, 1 Mr. White.
+- 11–20 players: 3 Undercover, 1 Mr. White.
+
+---
+
+### 4. **Gameplay Mechanics**
+
+- **No in-game clue-giving or online interaction** — the core gameplay is **offline discussion and deduction**.
+- Players may say a single word each turn to describe their clue, or engage in free conversation — this happens verbally among the group.
+- After each round of discussion, players **vote offline** to eliminate someone.
+- The eliminated player is selected via the interface: the game organizer taps on the player's name and presses the **"Eliminate"** button.
+- Upon elimination, the player's role is revealed **instantly on-screen**.
+
+---
+
+
+### 5. **Elimination Logic**
+
+- After players vote **offline** through discussion and consensus, one player is selected for elimination.
+- The game interface includes a simple **"Eliminate Player"** button.
+  - The host or organizer selects the name of the chosen player from a list.
+  - Pressing the "Eliminate Player" button immediately **reveals the role** of the selected player on-screen.
+- If the eliminated player is **Mr. White**:
+  - They are **prompted offline** to guess the civilian word.
+  - If the guess is correct, **Mr. White wins instantly**.
+  - If the guess is incorrect, the game continues as normal.
+- Eliminated players take no further part in the game but may observe silently.
+
+---
+
+
+### 6. **Victory Conditions**
+
+- **Civilians Win** when all *Undercover* and *Mr. White* players are eliminated.
+- **Undercover Win** when they equal or outnumber the remaining players.
+- **Mr. White Wins** if:
+  - They guess the civilian word upon being eliminated.
+  - OR they survive to the final two players.
+
+---
+
+### 7. **Interface Requirements**
+
+- A minimal app or web interface should:
+  - Allow each player to tap to reveal their secret role.
+  - Have a button to **eliminate a player**, showing a confirmation modal.
+  - Display the eliminated player's **role** after confirmation.
+  - Optionally track who has been eliminated and current player count.
+  - Ensure that the civilian and undercover words are generated as a similar pair (e.g., "pencil" vs. "pen").
+
+---
+
+### 8. **Design Considerations**
+
+- All interaction is human-to-human. The app is only a **tool for role distribution and elimination**.
+- Emphasize offline social deduction — lying, bluffing, deduction, and teamwork are encouraged.
+- The app or host should **never** display the full word list or allow roles to be viewed twice.
+
+---
+
+Generate this game logic in plain language, suitable for implementing in a party app or explaining to new players. Make it fun, suspenseful, and intuitive for casual groups or social events."
+
