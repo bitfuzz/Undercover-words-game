@@ -136,29 +136,16 @@ export function ActiveGame() {
         </div>
         
         <div className="bg-white dark:bg-neutral rounded-lg shadow-md p-6">
-          <h2 className="font-display font-bold text-xl mb-4">Game History</h2>
-          <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
-            {gameState.gameLog.map((log, index) => (
-              <div key={index} className="flex items-start">
-                <div className="flex-shrink-0 w-8 h-8 bg-gray-100 dark:bg-neutral-light rounded-full flex items-center justify-center text-sm font-bold mr-3">
-                  {log.round}
-                </div>
-                <div>
-                  <p className="text-sm mb-1">
-                    <span className="font-medium">{log.playerName}</span> was eliminated - Role: <span className={`text-${log.roleColor} font-medium`}>{log.role}</span>
-                  </p>
-                  {log.word && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Word: <span className="font-medium">{log.word}</span></p>
-                  )}
-                </div>
-              </div>
-            ))}
+          <h2 className="font-display font-bold text-xl mb-4">Game Information</h2>
+          <div className="space-y-3">
+            <div className="bg-gray-100 dark:bg-neutral-light p-4 rounded-lg">
+              <p className="font-medium mb-2">Round {gameState.round}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Players remaining: {activePlayers.length}/{gameState.players.length}
+              </p>
+            </div>
             
-            {gameState.gameLog.length > 0 && (
-              <div className="border-t border-gray-100 dark:border-neutral-lighter pt-2"></div>
-            )}
-            
-            <div className="text-sm text-gray-500 dark:text-gray-400 italic text-center">
+            <div className="text-sm text-gray-500 dark:text-gray-400 italic text-center mt-3">
               Game started with {gameState.players.length} players
             </div>
           </div>

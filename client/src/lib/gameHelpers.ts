@@ -27,21 +27,12 @@ export interface Player {
   color: string;
 }
 
-export interface GameLog {
-  round: number;
-  playerName: string;
-  role: PlayerRole;
-  word?: string;
-  roleColor: string;
-}
-
 export interface GameState {
   gameStarted: boolean;
   players: Player[];
   round: number;
   civilianWord: string;
   undercoverWord: string;
-  gameLog: GameLog[];
 }
 
 export interface Winner {

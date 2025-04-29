@@ -47,8 +47,7 @@ const initialGameState: GameState = {
   players: [],
   round: 1,
   civilianWord: "",
-  undercoverWord: "",
-  gameLog: []
+  undercoverWord: ""
 };
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -113,8 +112,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       players,
       round: 1,
       civilianWord,
-      undercoverWord,
-      gameLog: []
+      undercoverWord
     });
   }, []);
   
@@ -195,22 +193,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       const updatedPlayers = [...prevState.players];
       updatedPlayers[playerIndex] = playerToEliminate;
       
-      // Add to game log
-      const updatedGameLog = [
-        ...prevState.gameLog,
-        {
-          round: prevState.round,
-          playerName: playerToEliminate.name,
-          role: playerToEliminate.role,
-          word: playerToEliminate.word,
-          roleColor: playerToEliminate.role === "Civilian" 
-            ? "civilian" 
-            : playerToEliminate.role === "Undercover" 
-              ? "undercover" 
-              : "mrwhite"
-        }
-      ];
-      
       // Set the eliminated player for the result modal
       setEliminatedPlayer(playerToEliminate);
       
@@ -239,8 +221,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       return {
         ...prevState,
         players: updatedPlayers,
-        round: nextRound,
-        gameLog: updatedGameLog
+        round: nextRound
       };
     });
   }, []);

@@ -6,14 +6,22 @@ export function RoleRevealModal() {
   const { 
     gameState, 
     currentPlayerRole,
-    currentPlayerName, 
-    currentPlayerWord, 
+    currentPlayerName,
+    currentPlayerWord,
+    currentPlayerIndex,
+    revealedPlayers,
+    selectedCardIndex,
+    selectCard,
+    moveToNextPlayer,
     closeRoleRevealModal,
     setIsRulesModalOpen
   } = useGameContext();
 
   const [roleColor, setRoleColor] = useState("bg-civilian");
   const [textColor, setTextColor] = useState("text-civilian");
+  
+  // Number of cards for players to choose from
+  const CARD_COUNT = 3;
   
   useEffect(() => {
     if (currentPlayerRole === "Civilian") {
@@ -33,6 +41,60 @@ export function RoleRevealModal() {
     setIsRulesModalOpen(true);
   };
 
+  const handleSelectCard = (index: number) => {
+    selectCard(index);
+  };
+
+  const handleContinue = () => {
+    moveToNextPlayer();
+  };
+
+  // Card selection screen
+  if (selectedCardIndex === null) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
+        <div className="bg-white dark:bg-neutral-dark max-w-md w-full mx-4 rounded-lg overflow-hidden shadow-xl animate-slide-in">
+          <div className="p-6 text-center">
+            <h3 className="font-display font-bold text-2xl mb-1">{currentPlayerName}'s Turn</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              Select a card to reveal your role. Don't show this to others!
+            </p>
+            
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              {[...Array(CARD_COUNT)].map((_, index) => (
+                <button
+                  key={index}
+                  className="bg-gray-100 dark:bg-neutral aspect-[3/4] rounded-lg shadow-sm hover:shadow-md transition-all transform hover:scale-105 flex items-center justify-center"
+                  onClick={() => handleSelectCard(index)}
+                >
+                  <div className="text-4xl font-display font-bold text-gray-300 dark:text-neutral-lighter">?</div>
+                </button>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <Button 
+                variant="outline" 
+                className="border-primary text-primary hover:bg-primary/10 font-display font-medium"
+                onClick={handleShowRules}
+              >
+                Show Rules
+              </Button>
+              <Button 
+                className="bg-primary hover:bg-primary-dark text-white font-display font-medium"
+                onClick={closeRoleRevealModal}
+                disabled
+              >
+                Skip
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Role reveal screen
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
       <div className="bg-white dark:bg-neutral-dark max-w-md w-full mx-4 rounded-lg overflow-hidden shadow-xl animate-slide-in">
@@ -75,9 +137,9 @@ export function RoleRevealModal() {
             </Button>
             <Button 
               className="bg-primary hover:bg-primary-dark text-white font-display font-medium"
-              onClick={closeRoleRevealModal}
+              onClick={handleContinue}
             >
-              Got it
+              {currentPlayerIndex + 1 < gameState.players.length ? "Next Player" : "Done"}
             </Button>
           </div>
         </div>
