@@ -1,44 +1,77 @@
 // Word pairs for the Undercover game
-// Pairs are loaded from a JSON file
+// Instead of loading from JSON, we'll hardcode the data here for now
+// This is temporary until we can fix the JSON loading issue
 
 export interface WordPair {
   word1: string;
   word2: string;
 }
 
-// A cache for word pairs once loaded
-let loadedWordPairs: WordPair[] = [];
+// Predefined word pairs array to mimic what we'd get from the JSON
+const WORD_PAIRS_DATA: [string, string][] = [
+  ["Apple", "Banana"],
+  ["Dog", "Cat"],
+  ["Sun", "Moon"],
+  ["Coffee", "Tea"],
+  ["Car", "Bus"],
+  ["Beach", "Mountain"],
+  ["Book", "Magazine"],
+  ["Guitar", "Piano"],
+  ["Sneakers", "Sandals"],
+  ["Pencil", "Pen"],
+  ["Phone", "Computer"],
+  ["River", "Lake"],
+  ["Winter", "Summer"],
+  ["Fork", "Spoon"],
+  ["Chair", "Sofa"],
+  ["Soccer", "Basketball"],
+  ["Shirt", "Jacket"],
+  ["Camera", "Binoculars"],
+  ["Butterfly", "Bee"],
+  ["Train", "Subway"],
+  ["Pizza", "Burger"],
+  ["Hotel", "Motel"],
+  ["Violin", "Cello"],
+  ["Theater", "Cinema"],
+  ["Doctor", "Nurse"],
+  ["Painting", "Drawing"],
+  ["Ocean", "Sea"],
+  ["Airplane", "Helicopter"],
+  ["Sweater", "Hoodie"],
+  ["Strawberry", "Raspberry"],
+  ["Milk", "Juice"],
+  ["Mouse", "Rat"],
+  ["Breakfast", "Dinner"],
+  ["Sky", "Cloud"],
+  ["Keyboard", "Mouse"],
+  ["Map", "Globe"],
+  ["Fire", "Smoke"],
+  ["Hospital", "Clinic"],
+  ["Backpack", "Suitcase"],
+  ["Bicycle", "Motorcycle"],
+  ["Socks", "Gloves"],
+  ["Watch", "Clock"],
+  ["Bowl", "Plate"],
+  ["Elephant", "Giraffe"],
+  ["Diamond", "Ruby"],
+  ["Scissors", "Knife"],
+  ["Hammer", "Screwdriver"],
+  ["Shower", "Bath"],
+  ["Glasses", "Contacts"],
+  ["Football", "Rugby"],
+  ["Lion", "Tiger"]
+];
 
-// Function to load word pairs from JSON file
+// Convert the raw array data to WordPair objects
+const loadedWordPairs: WordPair[] = WORD_PAIRS_DATA.map(([word1, word2]) => ({
+  word1,
+  word2
+}));
+
+// Function to load word pairs - now returns synchronously since we have the data already
 async function loadWordPairs(): Promise<WordPair[]> {
-  try {
-    // Only load once if already loaded
-    if (loadedWordPairs.length > 0) {
-      return loadedWordPairs;
-    }
-
-    // Fetch word pairs from JSON file
-    const response = await fetch('/wordPairs.json');
-    
-    if (!response.ok) {
-      throw new Error(`Failed to load word pairs: ${response.status} ${response.statusText}`);
-    }
-    
-    // Parse the JSON data from the format [[word1, word2], [word1, word2], ...]
-    const pairsArray: string[][] = await response.json();
-    
-    // Convert to WordPair objects
-    loadedWordPairs = pairsArray.map(pair => ({
-      word1: pair[0],
-      word2: pair[1]
-    }));
-    
-    return loadedWordPairs;
-  } catch (error) {
-    console.error('Error loading word pairs:', error);
-    // Fallback to default pairs if loading fails
-    return defaultWordPairs();
-  }
+  console.log('Using internal word pairs list with', loadedWordPairs.length, 'pairs');
+  return Promise.resolve(loadedWordPairs);
 }
 
 // Default word pairs as fallback
