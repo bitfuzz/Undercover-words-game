@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { getRandomWordPair } from "@shared/wordPairs";
+import { getRandomWordPair, WordPair } from "@shared/wordPairs";
 
 // Define player colors
 const playerColors = [
@@ -40,14 +40,29 @@ export interface Winner {
   reason: "elimination" | "guess" | "survival";
 }
 
+// Default word pair in case async loading fails
+const DEFAULT_WORD_PAIR: WordPair = {
+  word1: "Apple",
+  word2: "Banana"
+};
+
 // Generate a new game
-export const generateGame = (
+export const generateGame = async (
   playerCount: number, 
   roleDistribution: { civilians: number; undercover: number; mrWhite: number },
   customNames: string[] = []
 ) => {
   // Generate random word pair
-  const { word1, word2 } = getRandomWordPair();
+  let wordPair: WordPair;
+  
+  try {
+    wordPair = await getRandomWordPair();
+  } catch (error) {
+    console.error("Error loading word pair:", error);
+    wordPair = DEFAULT_WORD_PAIR;
+  }
+  
+  const { word1, word2 } = wordPair;
   
   // Create players array
   let players: Player[] = [];

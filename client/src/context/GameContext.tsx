@@ -22,7 +22,7 @@ interface GameContextType {
   isGameOverModalOpen: boolean;
   isRulesModalOpen: boolean;
   resetGame: () => void;
-  startGame: (playerCount: number, roleDistribution: { civilians: number; undercover: number; mrWhite: number }, customNames: string[]) => void;
+  startGame: (playerCount: number, roleDistribution: { civilians: number; undercover: number; mrWhite: number }, customNames: string[]) => Promise<void>;
   openRoleRevealModal: () => void;
   closeRoleRevealModal: () => void;
   selectCard: (cardIndex: number) => void;
@@ -97,24 +97,44 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setIsGameOverModalOpen(false);
   }, []);
   
-  const startGame = useCallback((
+  const startGame = useCallback(async (
     playerCount: number, 
     roleDistribution: { civilians: number; undercover: number; mrWhite: number },
     customNames: string[] = []
   ) => {
-    const { players, civilianWord, undercoverWord } = generateGame(playerCount, roleDistribution, customNames);
-    
-    // Save the player names for future use
-    setPlayerNames(players.map(player => player.name));
-    
-    setGameState({
-      gameStarted: true,
-      players,
-      round: 1,
-      civilianWord,
-      undercoverWord
+    // Show loading toast
+    toast({
+      title: "Loading game...",
+      description: "Fetching word pairs from data file.",
     });
-  }, []);
+    
+    try {
+      const { players, civilianWord, undercoverWord } = await generateGame(playerCount, roleDistribution, customNames);
+      
+      // Save the player names for future use
+      setPlayerNames(players.map(player => player.name));
+      
+      setGameState({
+        gameStarted: true,
+        players,
+        round: 1,
+        civilianWord,
+        undercoverWord
+      });
+      
+      toast({
+        title: "Game ready!",
+        description: "Word pairs loaded successfully.",
+      });
+    } catch (error) {
+      console.error("Error starting game:", error);
+      toast({
+        title: "Error starting game",
+        description: "There was a problem loading word pairs. Using defaults.",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
   
   const openRoleRevealModal = useCallback(() => {
     // Start with the first player
