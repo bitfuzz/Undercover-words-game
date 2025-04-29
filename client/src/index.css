@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+ 
+    --primary: 247 75% 69%;
+    --primary-foreground: 355 100% 100%;
+ 
+    --secondary: 348 100% 75%;
+    --secondary-foreground: 240 5.9% 10%;
+ 
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+ 
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+ 
+    --radius: 0.5rem;
+
+    /* Game-specific colors */
+    --civilian: 122 41% 49%;
+    --undercover: 36 100% 50%;
+    --mrwhite: 207 90% 54%;
+
+    --neutral-bg: 240 16% 15%;
+    --neutral-light: 240 16% 25%;
+    --neutral-lighter: 240 12% 34%;
+    --neutral-dark: 240 17% 10%;
+    --neutral-darkest: 240 17% 5%;
+  }
+ 
+  .dark {
+    --background: 240 17% 10%;
+    --foreground: 0 0% 98%;
+ 
+    --card: 240 17% 10%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 240 17% 10%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 247 75% 69%;
+    --primary-foreground: 355 100% 100%;
+ 
+    --secondary: 348 100% 75%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 240 16% 25%;
+    --muted-foreground: 240 5% 64.9%;
+ 
+    --accent: 240 16% 25%;
+    --accent-foreground: 0 0% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    --border: 240 16% 25%;
+    --input: 240 16% 25%;
+    --ring: 240 4.9% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s ease forwards;
+}
+
+.role-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.role-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.player-item {
+  transition: background-color 0.2s ease;
+}
+
+.player-item:hover {
+  background-color: rgba(108, 99, 255, 0.1);
+}
+
+.text-civilian {
+  color: hsl(var(--civilian));
+}
+
+.text-undercover {
+  color: hsl(var(--undercover));
+}
+
+.text-mrwhite {
+  color: hsl(var(--mrwhite));
+}
+
+.bg-civilian {
+  background-color: hsl(var(--civilian));
+}
+
+.bg-undercover {
+  background-color: hsl(var(--undercover));
+}
+
+.bg-mrwhite {
+  background-color: hsl(var(--mrwhite));
+}
+
+.font-display {
+  font-family: 'Poppins', sans-serif;
+}
